@@ -37,4 +37,4 @@ Following tech stacks are used for building this script.
 
 ![App Screenshot](https://firebasestorage.googleapis.com/v0/b/laravel-notification-22697.appspot.com/o/donorbox%2Fdonorbox-5.png?alt=media&token=9ed380a1-8c2c-4b7f-874a-26e39e34bb6a)
 
-![App Screenshot](https://firebasestorage.googleapis.com/v0/b/laravel-notification-22697.appspot.com/o/donorbox%2Fdonorbox-6.png?alt=media&token=8b6adedb-054e-43b2-86c2-40694515f7da)
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/laravel-notification-22697.appspot.com/o/donorbox%2Fdonorbox-6.png?alt=media&token=3098845c-e7e9-48bb-a195-6337569f5fef)
