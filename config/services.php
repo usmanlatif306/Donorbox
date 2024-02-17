@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'donorbox' => [
+        'email' => env('DONORBOX_EMAIL'),
+        'key' => env('DONORBOX_API_KEY'),
+        'base_url' => env('DONORBOX_BASE_URL', 'https://donorbox.org/'),
+    ]
+
 ];
