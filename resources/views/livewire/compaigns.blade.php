@@ -32,7 +32,10 @@
                         <th class="p-0 pb-3 min-w-150px">Name</th>
                         <th class="p-0 pb-3 min-w-100px">Goal Amount</th>
                         <th class="p-0 pb-3 min-w-100px">Raised Amount</th>
+                        <th class="p-0 pb-3 min-w-100px">Withdraw</th>
                         <th class="p-0 pb-3 min-w-100px">Donors</th>
+                        <th class="p-0 pb-3 min-w-100px">Show on Dashboard</th>
+                        <th class="p-0 pb-3 min-w-100px">Creaded On</th>
                         <th class="p-0 pb-3 min-w-100px">Creaded On</th>
                     </tr>
                 </thead>
@@ -44,12 +47,19 @@
                             <td>{{ $compaign->name }}</td>
                             <td>{{ $compaign->formatted_goal_amount }}</td>
                             <td>{{ $compaign->formatted_total_raised }}</td>
+                            <td>{{ $compaign->stripe_payouts_sum_amount ? formatted_number($compaign->stripe_payouts_sum_amount) : 0 }}
+                                {{ currency_sign() }}
+                            </td>
                             <td>{{ $compaign->donations_count }}</td>
+                            <td class="">
+                                <input class="form-check-input" type="checkbox"
+                                    wire:click="toggleShow({{ $compaign->id }})" @checked($compaign->show) />
+                            </td>
                             <td>{{ $compaign->created_at->format('d M y') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6">No compaign</td>
+                            <td colspan="8">No compaign</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -23,6 +23,7 @@
                             <th class="p-0 pb-3 min-w-200px text-start">NAME</th>
                             <th class="p-0 pb-3 min-w-100px text-center">GOAL</th>
                             <th class="p-0 pb-3 min-w-100px text-center">RAISED</th>
+                            <th class="p-0 pb-3 min-w-100px text-center">WITHDRAW</th>
                             <th class="p-0 pb-3 min-w-100px text-center">DONORS</th>
                             <th class="p-0 pb-3 min-w-150px text-center pe-12">STATUS</th>
                             {{-- <th class="p-0 pb-3 w-150px text-center pe-7">CHART</th> --}}
@@ -46,6 +47,12 @@
                                 <td class="text-center pe-0">
                                     <span
                                         class="text-gray-600 fw-semibold fs-6">{{ $item['compaign']->formatted_total_raised }}</span>
+                                </td>
+                                <td class="text-center pe-0">
+                                    <span class="text-gray-600 fw-semibold fs-6">
+                                        {{ $item['compaign']->stripe_payouts_sum_amount ? formatted_number($item['compaign']->stripe_payouts_sum_amount) : 0 }}
+                                        {{ currency_sign() }}
+                                    </span>
                                 </td>
                                 <td class="text-center pe-0">
                                     <span

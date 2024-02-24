@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Listeners\PayoutFailedListener;
+use App\Listeners\PayoutPaidListener;
+use App\Listeners\PayoutUpdatedListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +20,15 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        'stripe-webhooks::payout.paid' => [
+            PayoutPaidListener::class,
+        ],
+        'stripe-webhooks::payout.failed' => [
+            PayoutFailedListener::class,
+        ],
+        'stripe-webhooks::payout.updated' => [
+            PayoutUpdatedListener::class,
         ],
     ];
 

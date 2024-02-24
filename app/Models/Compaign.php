@@ -16,7 +16,7 @@ class Compaign extends Model
      *
      * @var array
      */
-    protected $fillable = ['id', 'name', 'currency', 'goal_amt', 'formatted_goal_amount', 'total_raised', 'formatted_total_raised', 'donations_count', 'item_created_at', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'name', 'currency', 'goal_amt', 'formatted_goal_amount', 'total_raised', 'formatted_total_raised', 'donations_count', 'item_created_at', 'created_at', 'updated_at', 'show'];
 
     /**
      * The attributes that should be cast to native types.
@@ -49,5 +49,10 @@ class Compaign extends Model
     public function donations(): HasMany
     {
         return $this->hasMany(Donation::class);
+    }
+
+    public function stripe_payouts(): HasMany
+    {
+        return $this->hasMany(StripePayout::class);
     }
 }

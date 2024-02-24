@@ -17,8 +17,8 @@ class UserSeeder extends Seeder
     {
         User::create([
             'name' => 'Admin Donorbox',
-            'email' => 'admin@donorbox.com',
-            'password' => Hash::make('admin@donorbox.com'),
+            'email' => 'admin@stichtinghartvoorafrika.nl',
+            'password' => Hash::make('admin@stichtinghartvoorafrika.nl'),
             'remember_token' => Str::random(20),
         ]);
     }

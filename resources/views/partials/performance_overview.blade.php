@@ -60,14 +60,18 @@
                             </div>
                             <!--end::Symbol-->
                             <!--begin::Stats-->
-                            <div class="m-0">
-                                <!--begin::Number-->
-                                <span
-                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">${{ formatted_number($total_raised) }}</span>
-                                <!--end::Number-->
-                                <!--begin::Desc-->
-                                <span class="text-gray-500 fw-semibold fs-6">Total Donations</span>
-                                <!--end::Desc-->
+                            <div class="m-0 d-flex align-items-center justify-content-between">
+                                <div class="">
+                                    <span
+                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ currency_sign() }}{{ formatted_number($total_raised) }}</span>
+                                    <span class="text-gray-500 fw-semibold fs-6">Total Donations</span>
+                                </div>
+                                <div class="text-center">
+                                    <span
+                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ currency_sign() }}{{ formatted_number($total_withdraw) }}</span>
+                                    <span class="text-gray-500 fw-semibold fs-6">Total Withdraw</span>
+                                </div>
+
                             </div>
                             <!--end::Stats-->
                         </div>
@@ -90,14 +94,17 @@
                             </div>
                             <!--end::Symbol-->
                             <!--begin::Stats-->
-                            <div class="m-0">
-                                <!--begin::Number-->
-                                <span
-                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">${{ formatted_number($stripe_donations) }}</span>
-                                <!--end::Number-->
-                                <!--begin::Desc-->
-                                <span class="text-gray-500 fw-semibold fs-6">Stripe Donations</span>
-                                <!--end::Desc-->
+                            <div class="m-0 d-flex align-items-center justify-content-between">
+                                <div class="">
+                                    <span
+                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ currency_sign() }}{{ formatted_number($stripe_donations) }}</span>
+                                    <span class="text-gray-500 fw-semibold fs-6">Stripe Donations</span>
+                                </div>
+                                <div class="text-center">
+                                    <span
+                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ currency_sign($stripe['currency']) }}{{ formatted_number($stripe['amount']) }}</span>
+                                    <span class="text-gray-500 fw-semibold fs-6">Stripe Available Balance</span>
+                                </div>
                             </div>
                             <!--end::Stats-->
                         </div>
@@ -123,7 +130,7 @@
                             <div class="m-0">
                                 <!--begin::Number-->
                                 <span
-                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">${{ formatted_number($paypal_donations) }}</span>
+                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ currency_sign() }}{{ formatted_number($paypal_donations) }}</span>
                                 <!--end::Number-->
                                 <!--begin::Desc-->
                                 <span class="text-gray-500 fw-semibold fs-6">Paypal Donations</span>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Enums\DonationType;
 use App\Models\Compaign;
 use App\Models\Donation;
+use App\Models\StripePayout;
+use App\Services\StripeService;
 use App\Traits\DaysBetweenDates;
 use Illuminate\Http\Request;
 
@@ -16,10 +18,12 @@ class DashboardController extends Controller
      */
     public function __invoke(Request $request)
     {
+        $stripe = new StripeService();
+
         // getting starting and ending dates based on duration type
         if (!$request->has('type') || $request->type === 'all') {
-            $starting_date = Donation::select(['created_at'])->oldest()->first()?->created_at;
-            $ending_date = Donation::select(['created_at'])->latest()->first()?->created_at;
+            $starting_date = Donation::whereIn('compaign_id', active_compaigns())->select(['created_at'])->oldest()->first()?->created_at;
+            $ending_date = Donation::whereIn('compaign_id', active_compaigns())->select(['created_at'])->latest()->first()?->created_at;
         } elseif ($request->type === 'week') {
             $starting_date = now()->subDays(7);
         } elseif ($request->type === 'month') {
@@ -38,7 +42,7 @@ class DashboardController extends Controller
         $performance['formatted_dates'] = $this->dates($starting_date, $ending_date);
         $performance['formatted_data'] = [];
         foreach ($performance['formatted_dates'] as $date) {
-            $performance['formatted_data'][] = Donation::whereDate('created_at', $date)->sum('amount');
+            $performance['formatted_data'][] = Donation::whereIn('compaign_id', active_compaigns())->whereDate('created_at', $date)->sum('amount');
         }
 
         // choosing colour for each compaign, getting formatted data for each compaign based on duration type
@@ -48,14 +52,22 @@ class DashboardController extends Controller
         $formatted_compaigns['categories'][] = "";
         $formatted_compaigns['stripe_donations'][] = 0;
         $formatted_compaigns['paypal_donations'][] = 0;
-        foreach (Compaign::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->latest()->get() as $idx => $compaign) {
+        foreach (Compaign::withSum('stripe_payouts', 'amount')->whereIn('id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->latest()->get() as $idx => $compaign) {
             $item['colour']  = $colours[$idx];
             unset($colours[$idx]);
             $item['compaign']  = $compaign;
             $item['id']  = $compaign->id;
+
             $item['total_raised']  = Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            $item['total_withdraw']  = StripePayout::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            $item['remaining_balance'] = (float)$item['total_raised'] - (float)$item['total_withdraw'];
+
+            $item['withdraw_limit']  = (float)Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::STRIPE->value)->sum('amount') - (float)StripePayout::where('compaign_id', $compaign->id)->sum('amount');
+
             $starting = Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->oldest()->first()?->created_at;
+
             $ending = Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->latest()->first()?->created_at;
+
             $item['formatted_days'] = $this->days($starting, $ending);
             $item['formatted_dates'] = $this->dates($starting, $ending);
             $item['formatted_data'] = [];
@@ -64,23 +76,24 @@ class DashboardController extends Controller
             }
             $compaigns[] =  $item;
             $formatted_compaigns['categories'][] =  substr($compaign->name, 0, 10);
-            $formatted_compaigns['stripe_donations'][] =  Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::STRIPE->value)->sum('amount');
-            $formatted_compaigns['paypal_donations'][] =  Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::PAYPAL->value)->sum('amount');
+            $formatted_compaigns['stripe_donations'][] =  Donation::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::STRIPE->value)->sum('amount');
+            $formatted_compaigns['paypal_donations'][] =  Donation::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::PAYPAL->value)->sum('amount');
         }
 
         // getting data for stripe and paypal, getting formatted data for each compaign based on duration type
-
-        $stripe_donations = Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('type', DonationType::STRIPE->value)->sum('amount');
-        $paypal_donations = Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('type', DonationType::PAYPAL->value)->sum('amount');
+        $stripe_donations = Donation::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('type', DonationType::STRIPE->value)->sum('amount');
+        $paypal_donations = Donation::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('type', DonationType::PAYPAL->value)->sum('amount');
 
         return view('dashboard', [
             'compaigns' => $compaigns,
             'formatted_compaigns' => $formatted_compaigns,
-            'goal_amt' => Compaign::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->latest()->sum('goal_amt'),
-            'total_raised' => Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->sum('amount'),
+            'goal_amt' => Compaign::whereIn('id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->latest()->sum('goal_amt'),
+            'total_raised' => Donation::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->sum('amount'),
+            'total_withdraw' => StripePayout::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->sum('amount'),
             'performance' => $performance,
             'stripe_donations' => $stripe_donations,
-            'paypal_donations' => $paypal_donations
+            'paypal_donations' => $paypal_donations,
+            'stripe' => $stripe->balance(),
         ]);
     }
 }

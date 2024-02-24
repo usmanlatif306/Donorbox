@@ -4,10 +4,13 @@ use App\Http\Controllers\CompaignsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonationsController;
 use App\Http\Controllers\DonorsController;
+use App\Http\Controllers\PayoutController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WithdrawController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Stripe\Payout;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,13 +26,15 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/login');
 
 Auth::routes(['register' => false]);
-
+Route::stripeWebhooks('stripe/webhooks');
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::post('/withdraw', WithdrawController::class)->name('withdraw');
     Route::get('compaigns', CompaignsController::class)->name('compaigns.index');
     Route::get('donations', DonationsController::class)->name('donations.index');
     Route::get('plans', PlanController::class)->name('plans.index');
     Route::get('donors', DonorsController::class)->name('donors.index');
+    Route::get('payouts', PayoutController::class)->name('payouts.index');
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::post('/update', [ProfileController::class, 'update'])->name('update');

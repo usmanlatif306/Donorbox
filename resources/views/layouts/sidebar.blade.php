@@ -85,8 +85,24 @@
                         </a>
                     </div>
                     <!--end:Menu item-->
+
                     <!--begin:Menu item-->
                     <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('payouts.*') ? 'active' : '' }}"
+                            href="{{ route('payouts.index') }}">
+                            <span class="menu-icon">
+                                <i class="fas fa-money-check-alt fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                            </span>
+                            <span class="menu-title">Payouts</span>
+                        </a>
+                    </div>
+                    <!--end:Menu item-->
+
+                    <!--begin:Menu item-->
+                    {{-- <div class="menu-item">
                         <a class="menu-link {{ request()->routeIs('plans.*') ? 'active' : '' }}"
                             href="{{ route('plans.index') }}">
                             <span class="menu-icon">
@@ -97,10 +113,10 @@
                             </span>
                             <span class="menu-title">Plans</span>
                         </a>
-                    </div>
+                    </div> --}}
                     <!--end:Menu item-->
                     <!--begin:Menu item-->
-                    <div class="menu-item">
+                    {{-- <div class="menu-item">
                         <a class="menu-link {{ request()->routeIs('donors.*') ? 'active' : '' }}"
                             href="{{ route('donors.index') }}">
                             <span class="menu-icon">
@@ -111,7 +127,7 @@
                             </span>
                             <span class="menu-title">Donors</span>
                         </a>
-                    </div>
+                    </div> --}}
                     <!--end:Menu item-->
 
                     <!--begin:Menu item-->

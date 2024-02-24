@@ -2,6 +2,7 @@
 
 use App\Enums\PropertyStatus;
 use App\Models\Amenity;
+use App\Models\Compaign;
 
 if (!function_exists('name_alphabetic')) {
     function name_alphabetic($name)
@@ -45,5 +46,19 @@ if (!function_exists('formatted_number')) {
     {
         $number = number_format($number, $precise);
         return str_replace('.00', '', $number);
+    }
+}
+
+if (!function_exists('active_compaigns')) {
+    function active_compaigns()
+    {
+        return Compaign::whereShow(true)->pluck('id');
+    }
+}
+
+if (!function_exists('currency_sign')) {
+    function currency_sign($name = null)
+    {
+        return ($name && ($name === 'usd' || $name === 'USD')) ? '$' : '€';
     }
 }

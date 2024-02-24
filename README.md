@@ -8,7 +8,7 @@ Although donorbox provides facility for taking donations but the issue arose you
 
 ## Solution
 
-This scripts solve all the issues mention above. You can get you all compaigns donation record with beautifully represented on charts. You can get information about all your donors how much they have paid you. You can filter the donations about different date range like weekly, monthly, quarterly, half year or even yearly and much more features related your compaigns on donorbox.
+This scripts solve all the issues mention above. You can get you all compaigns donation record with beautifully represented on charts. You can get information about all your donors how much they have paid you. You can filter the donations about different date range like weekly, monthly, quarterly, half year or even yearly and much more features related your compaigns on donorbox. You can manually payouts from stripe for each compaign and keep record how much you have raised and withdraw for purticular compaign.
 
 ## How It Works
 
@@ -16,7 +16,7 @@ This scripts work with donorbox api. It has cron job that run after every hour t
 
 ## Requirements
 
-Rename '.env.examle' file to '.env'. You need to have your [donorbox api key](https://github.com/donorbox/donorbox-api) from here and place it 'DONORBOX_API_KEY' veriable in .env file. Also write your email address that you use for login on donorbox dashbaord and place it 'DONORBOX_EMAIL' in .env file.
+Rename '.env.examle' file to '.env'. You need to have your [donorbox api key](https://github.com/donorbox/donorbox-api) from here and place it 'DONORBOX_API_KEY' veriable in .env file. Also write your email address that you use for login on donorbox dashbaord and place it 'DONORBOX_EMAIL' in .env file. Write down your stripe keys and webhook keys to payout from stripe. add "{your main url}/stripe/webhooks" to your stripe webhook endpoint. You can change it and can use your own endpoint. Please add your custom endpoint in web.php file.
 
 ## Tech Stacks
 

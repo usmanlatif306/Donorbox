@@ -17,6 +17,7 @@ class Compaigns extends Component
     {
         return view('livewire.compaigns', [
             'compaigns' => Compaign::query()
+                ->withSum('stripe_payouts', 'amount')
                 ->when($this->type !== "all", fn ($q) => $this->type === 'week' ? $q->week() : ($this->type === 'month' ? $q->month() : ""))
                 ->when($this->search, fn ($q) => $q->whereLike(['name'], $this->search))
                 ->latest()
@@ -28,4 +29,10 @@ class Compaigns extends Component
     {
         $this->type = $type;
     }
+
+    public function toggleShow(Compaign $compaign)
+    {
+        $compaign->update(['show' => !$compaign->show]);
+    }
+    // 504654,511286,511287,511291,511292
 }

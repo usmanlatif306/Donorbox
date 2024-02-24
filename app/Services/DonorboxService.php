@@ -35,6 +35,8 @@ class DonorboxService
                     error_log($th->getMessage());
                 }
             }
+
+            // Compaign::when('show', false)->whereIn('id', [504654, 511286, 511287, 511291, 511292])->update(['show' => true]);
             return true;
         }
 

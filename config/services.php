@@ -35,6 +35,11 @@ return [
         'email' => env('DONORBOX_EMAIL'),
         'key' => env('DONORBOX_API_KEY'),
         'base_url' => env('DONORBOX_BASE_URL', 'https://donorbox.org/'),
-    ]
+    ],
+
+    'stripe' => [
+        'key' => env('STRIPE_PUBLIC_KEY'),
+        'secret' => env('STRIPE_SECRET_KEY'),
+    ],
 
 ];
