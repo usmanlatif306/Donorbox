@@ -1,4 +1,4 @@
-<div class="col-md-6 col-xxl-12">
+<div class="col-12">
     <!--begin::List widget 3-->
     <div class="card card-flush h-xl-100">
         <!--begin::Header-->

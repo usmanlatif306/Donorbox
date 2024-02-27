@@ -104,6 +104,7 @@ class DonorboxService
                         'donation_date' => $donation['donation_date'],
                         'created_at' => $donation['donation_date'],
                         'updated_at' => $donation['donation_date'],
+                        'culacted' => $donation['amount'] - $donation['processing_fee']
                     ]);
                 } catch (\Throwable $th) {
                     error_log($th->getMessage());

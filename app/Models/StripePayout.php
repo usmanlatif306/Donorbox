@@ -46,4 +46,22 @@ class StripePayout extends Model
     {
         return $this->belongsTo(Compaign::class);
     }
+
+    /**
+     * Scope a query to only include records between duration.
+     */
+    public function scopeDuration(Builder $query, string $type): void
+    {
+        if ($type === "week") {
+            $query->week();
+        } elseif ($type === "month") {
+            $query->month();
+        } elseif ($type === "quarter") {
+            $query->quarter();
+        } elseif ($type === "6_months") {
+            $query->halfYear();
+        } elseif ($type === "year") {
+            $query->year();
+        }
+    }
 }

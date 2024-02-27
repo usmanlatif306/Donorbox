@@ -14,13 +14,23 @@
     </div>
     <div class="card-body">
         <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1">
-            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
-            <input type="search" wire:model.live="search" class="form-control form-control-solid w-250px ps-13"
-                placeholder="{{ __('Search compaign') }}" />
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center position-relative my-1">
+                <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                </i>
+                <input type="search" wire:model.live="search" class="form-control form-control-solid w-250px ps-13"
+                    placeholder="{{ __('Search compaign') }}" />
+            </div>
+            <div class="">
+                <a href="{{ route('compaigns.export', ['type' => 'pdf']) }}"
+                    class="btn btn-sm btn-light-primary fw-bold px-4 me-1">Export PDF</a>
+                <a href="{{ route('compaigns.export', ['type' => 'xlsx']) }}"
+                    class="btn btn-sm btn-light-primary fw-bold px-4 me-1">Export
+                    Excel</a>
+            </div>
+
         </div>
         <!--end::Search-->
 
@@ -35,8 +45,7 @@
                         <th class="p-0 pb-3 min-w-100px">Withdraw</th>
                         <th class="p-0 pb-3 min-w-100px">Donors</th>
                         <th class="p-0 pb-3 min-w-100px">Show on Dashboard</th>
-                        <th class="p-0 pb-3 min-w-100px">Creaded On</th>
-                        <th class="p-0 pb-3 min-w-100px">Creaded On</th>
+                        <th class="p-0 pb-3 min-w-100px">Creaded</th>
                     </tr>
                 </thead>
 

@@ -13,6 +13,12 @@ class Donations extends Component
     public string $search = "";
     public string $type = "all";
     public string $donation_type = "all";
+    public string $currency_sign = "";
+
+    public function mount()
+    {
+        $this->currency_sign = currency_sign();
+    }
 
     public function render()
     {

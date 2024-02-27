@@ -68,4 +68,14 @@ class StripeService
             ];
         }
     }
+
+    public function charges($id)
+    {
+        return $this->stripe->charges->retrieve($id, []);
+    }
+
+    public function payouts($id)
+    {
+        return $this->stripe->payouts->retrieve($id, []);
+    }
 }

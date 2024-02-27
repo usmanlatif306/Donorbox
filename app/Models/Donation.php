@@ -16,7 +16,7 @@ class Donation extends Model
      *
      * @var array
      */
-    protected $fillable = ['compaign_id', 'donor_id', 'amount', 'formatted_amount', 'currency', 'type', 'stripe_charge_id', 'paypal_transaction_id', 'status', 'recurring', 'processing_fee', 'formatted_processing_fee', 'donation_date', 'id', 'created_at', 'updated_at'];
+    protected $fillable = ['compaign_id', 'donor_id', 'amount', 'formatted_amount', 'currency', 'type', 'stripe_charge_id', 'paypal_transaction_id', 'status', 'recurring', 'processing_fee', 'formatted_processing_fee', 'donation_date', 'id', 'created_at', 'updated_at', 'culacted'];
 
     /**
      * The attributes that should be cast to native types.

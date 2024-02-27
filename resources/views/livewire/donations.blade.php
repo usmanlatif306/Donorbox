@@ -24,13 +24,22 @@
     </div>
     <div class="card-body">
         <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1">
-            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
-            <input type="search" wire:model.live="search" class="form-control form-control-solid w-250px ps-13"
-                placeholder="{{ __('Search doantion') }}" />
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center position-relative my-1">
+                <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                </i>
+                <input type="search" wire:model.live="search" class="form-control form-control-solid w-250px ps-13"
+                    placeholder="{{ __('Search doantion') }}" />
+            </div>
+            <div class="">
+                <a href="{{ route('donations.export', ['type' => 'pdf']) }}"
+                    class="btn btn-sm btn-light-primary fw-bold px-4 me-1">Export PDF</a>
+                <a href="{{ route('donations.export', ['type' => 'xlsx']) }}"
+                    class="btn btn-sm btn-light-primary fw-bold px-4 me-1">Export
+                    Excel</a>
+            </div>
         </div>
         <!--end::Search-->
 
@@ -40,10 +49,11 @@
                     <tr class="fs-7 fw-bold text-gray-400 border-bottom-0">
                         <th class="pb-3 min-w-50px text-start">No</th>
                         <th class="pb-3 min-w-150px">Compaign</th>
-                        <th class="pb-3 min-w-150px">Donor</th>
-                        <th class="pb-3 min-w-100px text-center">Amount</th>
+                        <th class="pb-3 min-w-125px">Donor</th>
                         <th class="pb-3 min-w-100px text-center">Type</th>
+                        <th class="pb-3 min-w-100px text-center">Amount</th>
                         <th class="pb-3 min-w-100px text-center">Fee</th>
+                        <th class="pb-3 min-w-100px text-center">Received</th>
                         <th class="pb-3 min-w-100px text-center">Status</th>
                         <th class="pb-3 min-w-100px text-center">Time</th>
                     </tr>
@@ -69,9 +79,10 @@
                                     <span>{{ $donation->donor?->email }}</span>
                                 </div>
                             </td>
-                            <td class="text-center">{{ $donation->formatted_amount }}</td>
                             <td class="text-capitalize text-center">{{ $donation->type }}</td>
+                            <td class="text-center">{{ $donation->formatted_amount }}</td>
                             <td class="text-center">{{ $donation->formatted_processing_fee }}</td>
+                            <td class="text-center">{{ $donation->culacted }} {{ $currency_sign }}</td>
                             <td class="text-capitalize text-center">{{ $donation->status }}</td>
                             <td class="text-center">{{ $donation->created_at->format('d M y') }}</td>
                         </tr>

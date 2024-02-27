@@ -1,4 +1,4 @@
-<div class="col-md-6 col-xxl-12 mb-5 mb-xl-10">
+<div class="col-12 mb-5 mb-xl-10">
     <!--begin::Table widget 14-->
     <div class="card card-flush h-md-100">
         <!--begin::Header-->
@@ -34,7 +34,12 @@
                     <tbody>
                         @foreach ($compaigns as $item)
                             @php
-                                $completed = $item['compaign']->total_raised >= $item['compaign']->goal_amt;
+                                if ($item['compaign']->goal_amt == 0) {
+                                    $completed = false;
+                                } else {
+                                    $completed = $item['compaign']->total_raised >= $item['compaign']->goal_amt;
+                                }
+
                             @endphp
                             <tr>
                                 <td>
@@ -51,7 +56,7 @@
                                 <td class="text-center pe-0">
                                     <span class="text-gray-600 fw-semibold fs-6">
                                         {{ $item['compaign']->stripe_payouts_sum_amount ? formatted_number($item['compaign']->stripe_payouts_sum_amount) : 0 }}
-                                        {{ currency_sign() }}
+                                        {{ $currency_sign }}
                                     </span>
                                 </td>
                                 <td class="text-center pe-0">

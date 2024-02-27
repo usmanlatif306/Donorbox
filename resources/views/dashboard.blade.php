@@ -35,7 +35,10 @@
 
                 @include('partials.compains_percentage', ['compaigns' => $compaigns])
 
-                @include('partials.compaigns', ['compaigns' => $compaigns])
+                @include('partials.compaigns', [
+                    'compaigns' => $compaigns,
+                    'currency_sign' => currency_sign(),
+                ])
 
             </div>
             <!--end::Row-->
