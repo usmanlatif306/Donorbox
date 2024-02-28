@@ -5,8 +5,8 @@
         <div class="card-header pt-5">
             <!--begin::Title-->
             <h3 class="card-title align-items-start flex-column">
-                <span class="card-label fw-bold text-dark fs-3">Compaigns</span>
-                <span class="text-gray-400 mt-1 fw-semibold fs-6">Percentage of all compaigns</span>
+                <span class="card-label fw-bold text-dark fs-3">Campaigns</span>
+                <span class="text-gray-400 mt-1 fw-semibold fs-6">Percentage of all campaigns</span>
             </h3>
             <!--end::Title-->
         </div>

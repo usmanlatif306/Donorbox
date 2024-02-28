@@ -37,7 +37,7 @@
                                     class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ count($compaigns) }}</span>
                                 <!--end::Number-->
                                 <!--begin::Desc-->
-                                <span class="text-gray-500 fw-semibold fs-6">Compaigns</span>
+                                <span class="text-gray-500 fw-semibold fs-6">Campaigns</span>
                                 <!--end::Desc-->
                             </div>
                             <!--end::Stats-->

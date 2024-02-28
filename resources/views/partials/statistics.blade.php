@@ -4,15 +4,21 @@
         @foreach ($compaigns as $item)
             <!--begin::Col-->
             {{-- <div class="{{ !$loop->last ? 'col-md-6 col-xl-6' : 'col-12' }}"> --}}
-            <div class="col-md-6 col-xl-4">
+            <div class="col-12 col-lg-6">
                 <div class="card">
                     <div class="card-body d-flex justify-content-between flex-column px-0 pb-0">
                         <div class="mb-4 px-9">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <div class="d-flex align-items-center justify-content-between gap-5 flex-1 w-100 pe-4">
-                                    <div class="d-flex align-items-center" title="Raised Donations">
+                                    <div class="d-flex align-items-center" title="Raised Donations Without Tax">
                                         <span
                                             class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">{{ formatted_number($item['total_raised']) }}</span>
+                                        <span
+                                            class="d-flex align-items-end text-gray-400 fs-6 fw-semibold">{{ $currency_sign }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center" title="Raised Donations With Tax">
+                                        <span
+                                            class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">{{ formatted_number($item['total_raised_with_tax']) }}</span>
                                         <span
                                             class="d-flex align-items-end text-gray-400 fs-6 fw-semibold">{{ $currency_sign }}</span>
                                     </div>

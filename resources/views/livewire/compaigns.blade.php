@@ -1,7 +1,7 @@
 <div class="card card-flush">
     <div class="card-header pt-7">
         <h3 class="card-title align-items-start flex-column">
-            <span class="card-label fw-bold text-gray-800">All Compaigns</span>
+            <span class="card-label fw-bold text-gray-800">All Campaigns</span>
         </h3>
         <div class="card-toolbar">
             <button wire:click="changeType('all')"
@@ -21,7 +21,7 @@
                     <span class="path2"></span>
                 </i>
                 <input type="search" wire:model.live="search" class="form-control form-control-solid w-250px ps-13"
-                    placeholder="{{ __('Search compaign') }}" />
+                    placeholder="{{ __('Search campaign') }}" />
             </div>
             <div class="">
                 <a href="{{ route('compaigns.export', ['type' => 'pdf']) }}"

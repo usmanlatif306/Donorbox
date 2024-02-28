@@ -32,8 +32,8 @@ Route::stripeWebhooks('stripe/webhooks');
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::post('/withdraw', WithdrawController::class)->name('withdraw');
-    Route::get('compaigns/export', CompaignsExportController::class)->name('compaigns.export');
-    Route::get('compaigns', CompaignsController::class)->name('compaigns.index');
+    Route::get('campaigns/export', CompaignsExportController::class)->name('compaigns.export');
+    Route::get('campaigns', CompaignsController::class)->name('compaigns.index');
     Route::get('donations/export', DonationsExportController::class)->name('donations.export');
     Route::get('donations', DonationsController::class)->name('donations.index');
     Route::get('plans', PlanController::class)->name('plans.index');

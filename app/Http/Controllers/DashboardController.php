@@ -58,7 +58,8 @@ class DashboardController extends Controller
             $item['compaign']  = $compaign;
             $item['id']  = $compaign->id;
 
-            $item['total_raised']  = Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('culacted');
+            $item['total_raised']  = Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            $item['total_raised_with_tax']  = Donation::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('culacted');
             $item['total_withdraw']  = StripePayout::when($request->has('type') && $request->type !== 'all', fn ($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
             $item['remaining_balance'] = (float)$item['total_raised'] - (float)$item['total_withdraw'];
 
