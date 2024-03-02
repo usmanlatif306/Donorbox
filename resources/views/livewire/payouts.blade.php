@@ -45,7 +45,7 @@
                         <th class="pb-3 min-w-100px text-center">Status</th>
                         <th class="pb-3 min-w-100px text-center">Type</th>
                         <th class="pb-3 min-w-100px text-center">Arrival Date</th>
-                        <th class="pb-3 min-w-100px text-center">Created On</th>
+                        <th class="pb-3 min-w-100px text-center">Created</th>
                     </tr>
                 </thead>
 

@@ -45,7 +45,7 @@
                         <th class="p-0 pb-3 min-w-100px">Withdraw</th>
                         <th class="p-0 pb-3 min-w-100px">Donors</th>
                         <th class="p-0 pb-3 min-w-100px">Show on Dashboard</th>
-                        <th class="p-0 pb-3 min-w-100px">Creaded</th>
+                        <th class="p-0 pb-3 min-w-100px">Created</th>
                     </tr>
                 </thead>
 

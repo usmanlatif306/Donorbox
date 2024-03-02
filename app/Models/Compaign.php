@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Compaign extends Model
 {
@@ -54,5 +55,15 @@ class Compaign extends Model
     public function stripe_payouts(): HasMany
     {
         return $this->hasMany(StripePayout::class);
+    }
+
+    public function resets(): HasMany
+    {
+        return $this->hasMany(CompaignReset::class);
+    }
+
+    public function reset(): HasOne
+    {
+        return $this->hasOne(CompaignReset::class)->latestOfMany();
     }
 }

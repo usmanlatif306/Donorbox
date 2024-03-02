@@ -9,6 +9,7 @@ use App\Http\Controllers\DonorsController;
 use App\Http\Controllers\PayoutController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ResetCompaignController;
 use App\Http\Controllers\WithdrawController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,7 @@ Route::stripeWebhooks('stripe/webhooks');
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::post('/withdraw', WithdrawController::class)->name('withdraw');
+    Route::post('campaigns/reset', ResetCompaignController::class)->name('compaigns.reset');
     Route::get('campaigns/export', CompaignsExportController::class)->name('compaigns.export');
     Route::get('campaigns', CompaignsController::class)->name('compaigns.index');
     Route::get('donations/export', DonationsExportController::class)->name('donations.export');

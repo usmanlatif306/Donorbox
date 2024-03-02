@@ -96,5 +96,10 @@
             $('#withdraw_amount').attr('max', limit);
             $('#withdrawl_modal').modal('show');
         }
+
+        function resetCompaign(compaign_id) {
+            $('#reset_compaign_id').val(compaign_id);
+            $('#reset_compaign_form').submit();
+        }
     </script>
 @endpush

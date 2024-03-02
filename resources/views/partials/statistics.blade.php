@@ -29,9 +29,14 @@
                                             class="d-flex align-items-end text-gray-400 fs-6 fw-semibold">{{ $currency_sign }}</span>
                                     </div>
                                 </div>
-                                <button class="btn btn-sm btn-light-primary"
-                                    onclick="withdraw('{{ $item['compaign']->id }}','{{ $item['compaign']->name }}',{{ $item['withdraw_limit'] }},'{{ $currency_sign . $item['remaining_balance'] }}')"
-                                    {{ $item['withdraw_limit'] == 0 ? 'disabled' : '' }}>Withdraw</button>
+                                <div class="d-flex flex-column gap-3">
+                                    <button class="btn btn-sm btn-light-primary"
+                                        onclick="resetCompaign('{{ $item['compaign']->id }}')" title="Reset Campaign"
+                                        {{ $item['total_raised'] == 0 ? 'disabled' : '' }}>Reset</button>
+                                    <button class="btn btn-sm btn-light-primary"
+                                        onclick="withdraw('{{ $item['compaign']->id }}','{{ $item['compaign']->name }}',{{ $item['withdraw_limit'] }},'{{ $currency_sign . $item['remaining_balance'] }}')"
+                                        {{ $item['withdraw_limit'] == 0 ? 'disabled' : '' }}>Withdraw</button>
+                                </div>
                             </div>
                             <span class="fs-6 fw-semibold text-gray-400">{{ $item['compaign']->name }}</span>
                         </div>
@@ -44,4 +49,9 @@
         @endforeach
     </div>
     <!--end::Row-->
+
+    <form id="reset_compaign_form" action="{{ route('compaigns.reset') }}" method="post">
+        @csrf
+        <input type="hidden" id="reset_compaign_id" name="compaign_id">
+    </form>
 </div>
