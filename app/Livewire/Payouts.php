@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\PaypalPayout;
 use App\Models\StripePayout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -12,19 +13,26 @@ class Payouts extends Component
 
     public string $search = "";
     public string $type = "all";
-    public string $payout_type = "all";
+    public string $payout_type = "stripe";
 
     public function render()
     {
         return view('livewire.payouts', [
-            'payouts' => StripePayout::query()
+            'payouts' => $this->payout_type === "stripe" ? StripePayout::query()
                 ->withoutGlobalScope('status')
                 ->with(['compaign:id,name'])
-                ->when($this->type !== "all", fn ($q) => $this->type === 'week' ? $q->week() : ($this->type === 'month' ? $q->month() : ""))
-                ->when($this->search, fn ($q) => $q->whereLike(['payout_id', 'amount', 'status', 'type'], $this->search)->orWhereHas('compaign', fn ($qry) => $qry->whereLike(['name'], $this->search)))
-                ->when($this->payout_type !== "all", fn ($q) => $q->where('type', $this->payout_type))
+                ->when($this->type !== "all", fn($q) => $this->type === 'week' ? $q->week() : ($this->type === 'month' ? $q->month() : ""))
+                ->when($this->search, fn($q) => $q->whereLike(['payout_id', 'amount', 'status', 'type'], $this->search)->orWhereHas('compaign', fn($qry) => $qry->whereLike(['name'], $this->search)))
                 ->latest()
-                ->paginate(),
+                ->paginate() :
+                PaypalPayout::query()
+                    ->withoutGlobalScope('status')
+                    ->with(['compaign:id,name'])
+                    ->when($this->type !== "all", fn($q) => $this->type === 'week' ? $q->week() : ($this->type === 'month' ? $q->month() : ""))
+                    ->when($this->search, fn($q) => $q->whereLike(['payout_id', 'amount', 'status'], $this->search)->orWhereHas('compaign', fn($qry) => $qry->whereLike(['name'], $this->search)))
+                    ->latest()
+                    ->paginate()
+            ,
         ]);
     }
 

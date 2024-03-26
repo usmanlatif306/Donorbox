@@ -149,6 +149,8 @@ class DonorboxService
 
     private function request($url)
     {
+        // $url = config('services.donorbox.base_email') . ':' . config('services.donorbox.key') . '@' . config('services.donorbox.base_url') . '/' . $url;
         return Http::withBasicAuth(config('services.donorbox.email'), config('services.donorbox.key'))->get(config('services.donorbox.base_url') . $url);
+        // return Http::get($url);
     }
 }

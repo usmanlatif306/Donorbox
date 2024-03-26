@@ -7,6 +7,9 @@
         <div id="kt_app_content_container" class="app-container container-fluid">
             {{-- Alert Messages --}}
             @include('partials.alert')
+            @php
+                $currency_sign = currency_sign();
+            @endphp
 
             <!--begin::Row-->
             <div class="row gx-5 gx-xl-10">
@@ -14,6 +17,8 @@
                     'compaigns' => $compaigns,
                     'total_raised' => $total_raised,
                     'total_withdraw' => $total_withdraw,
+                    'stripe_withdraw' => $stripe_withdraw,
+                    'paypal_withdraw' => $paypal_withdraw,
                     'stripe_donations' => $stripe_donations,
                     'paypal_donations' => $paypal_donations,
                     'stripe' => $stripe,
@@ -21,7 +26,7 @@
 
                 @include('partials.statistics', [
                     'compaigns' => $compaigns,
-                    'currency_sign' => currency_sign(),
+                    'currency_sign' => $currency_sign,
                 ])
             </div>
             <!--end::Row-->
@@ -37,7 +42,7 @@
 
                 @include('partials.compaigns', [
                     'compaigns' => $compaigns,
-                    'currency_sign' => currency_sign(),
+                    'currency_sign' => $currency_sign,
                 ])
 
             </div>
@@ -62,11 +67,37 @@
                         <form action="{{ route('withdraw') }}" method="post">
                             @csrf
                             <div class="modal-body">
-                                <input type="hidden" id="compaign_id" name="compaign_id">
-                                <input type="number" id="withdraw_amount" name="withdraw_amount" class="form-control"
-                                    placeholder="Enter withdraw amount" required />
-                                <span id="remaining_amount_notice" class="text-primary d-block pt-1"></span>
+                                <!--begin::Tabs-->
+                                <div class="card-title mb-5 gap-4 gap-lg-10 gap-xl-15 nav nav-tabs border-bottom-0"
+                                    data-kt-withdraw-type="tabs_nav">
+                                    <div id="stripe_tab"
+                                        class="fs-4 fw-bold pb-3 cursor-pointer border-bottom border-3 border-primary"
+                                        data-kt-withdraw-type="tab" data-kt-withdraw-type-value="stripe">Stripe Withdraw
+                                    </div>
 
+                                    <div id="paypal_tab" class="fs-4 fw-bold pb-3 cursor-pointer text-muted"
+                                        data-kt-withdraw-type="tab" data-kt-withdraw-type-value="paypal">Paypal Withdraw
+                                    </div>
+                                </div>
+                                <!--end::Tabs-->
+
+                                <input type="hidden" name="type" value="stripe">
+                                <input type="hidden" id="compaign_id" name="compaign_id">
+
+                                <div id="payout_id" class="d-none mb-4">
+                                    <input type="text" name="payout_id" class="form-control"
+                                        placeholder="Enter Paypal Payout Id" />
+                                    <span class="text-primary d-block pt-1">Paypal transaction id of withdrawal amount for
+                                        reference</span>
+                                </div>
+
+                                <div class="">
+                                    <input type="number" id="withdraw_amount" name="withdraw_amount" class="form-control"
+                                        placeholder="Enter withdraw amount" required />
+                                    <span id="stripe_remaining_amount_notice" class="text-primary d-block pt-1"></span>
+                                    <span id="paypal_remaining_amount_notice"
+                                        class="text-primary d-block pt-1 d-none"></span>
+                                </div>
                             </div>
 
                             <div class="modal-footer">
@@ -89,11 +120,56 @@
     ])
 
     <script>
-        function withdraw(compaign_id, compaign_name, limit, remaining_amount) {
+        let stripe_withdraw_limit = 0;
+        let paypal_withdraw_limit = 0;
+        const e = document.querySelector('[data-kt-withdraw-type="tabs_nav"]')
+            .querySelectorAll('[data-kt-withdraw-type="tab"]');
+        const a = ["border-bottom", "border-3", "border-primary"];
+
+        e.forEach((l => {
+            l.addEventListener("click", (r => {
+                e.forEach((e => {
+                    e.classList.remove(...a), e
+                        .classList.add("text-muted")
+                })), l.classList.remove("text-muted"), l.classList.add(...a);
+                const tabValue = l.getAttribute("data-kt-withdraw-type-value");
+                if (tabValue == "stripe") {
+                    $('#withdraw_amount').attr('max', stripe_withdraw_limit);
+                    $('#payout_id').addClass('d-none');
+                    $("[name='payout_id']").attr('required', false);
+                    $(`#stripe_remaining_amount_notice`).removeClass('d-none');
+                    $(`#paypal_remaining_amount_notice`).addClass('d-none');
+                } else {
+                    $('#withdraw_amount').attr('max', paypal_withdraw_limit);
+                    $('#payout_id').removeClass('d-none');
+                    $("[name='payout_id']").attr('required', true);
+                    $(`#stripe_remaining_amount_notice`).addClass('d-none');
+                    $(`#paypal_remaining_amount_notice`).removeClass('d-none');
+                }
+                $("[name='type']").val(tabValue);
+            }))
+        }));
+
+        function withdraw(compaign_id, compaign_name, stripe_limit, stripe_remaining_amount, paypal_limit,
+            paypal_remaining_amount) {
+            // reset withdraw type tabs
+            $("[name='type']").val('stripe');
+            $('#stripe_tab').removeClass().addClass(
+                'fs-4 fw-bold pb-3 cursor-pointer border-bottom border-3 border-primary');
+            $('#paypal_tab').removeClass().addClass('fs-4 fw-bold pb-3 cursor-pointer text-muted');
+            $(`#stripe_remaining_amount_notice`).removeClass('d-none');
+            $(`#paypal_remaining_amount_notice`).addClass('d-none');
+            $('#payout_id').addClass('d-none');
+            $("[name='payout_id']").attr('required', false);
+
+            // setting values for withdraw modal
             $('#compaign_id').val(compaign_id);
             $('#modal_title').text(compaign_name);
-            $('#remaining_amount_notice').text(`Remaining balance to withdraw: ${remaining_amount}`);
-            $('#withdraw_amount').attr('max', limit);
+            $('#stripe_remaining_amount_notice').text(`Remaining stripe balance to withdraw: ${stripe_remaining_amount}`);
+            $('#paypal_remaining_amount_notice').text(`Remaining paypal balance to withdraw: ${paypal_remaining_amount}`);
+            $('#withdraw_amount').attr('max', stripe_limit);
+            stripe_withdraw_limit = stripe_limit;
+            paypal_withdraw_limit = paypal_limit;
             $('#withdrawl_modal').modal('show');
         }
 

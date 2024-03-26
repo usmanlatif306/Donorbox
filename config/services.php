@@ -34,6 +34,7 @@ return [
     'donorbox' => [
         'email' => env('DONORBOX_EMAIL'),
         'key' => env('DONORBOX_API_KEY'),
+        'base_email' => env('DONORBOX_BASE_EMAIL', ''),
         'base_url' => env('DONORBOX_BASE_URL', 'https://donorbox.org/'),
     ],
 

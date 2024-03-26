@@ -1,16 +1,16 @@
 <div class="card card-flush">
     <div class="card-header pt-7">
         <h3 class="card-title align-items-start flex-column">
-            <span class="card-label fw-bold text-gray-800">All Payouts</span>
+            <span class="card-label fw-bold text-gray-800">Payouts</span>
         </h3>
-        {{-- <div class="card-toolbar">
-            <button wire:click="changePayoutType('all')"
-                class="nav-link btn btn-sm btn-color-muted btn-active btn-active-light fw-bold px-4 me-1 {{ $payout_type === 'all' ? 'active' : '' }}">All</button>
+        <div class="card-toolbar">
+            {{-- <button wire:click="changePayoutType('all')"
+                class="nav-link btn btn-sm btn-color-muted btn-active btn-active-light fw-bold px-4 me-1 {{ $payout_type === 'all' ? 'active' : '' }}">All</button> --}}
             <button wire:click="changePayoutType('stripe')"
                 class="nav-link btn btn-sm btn-color-muted btn-active btn-active-light fw-bold px-4 me-1 {{ $payout_type === 'stripe' ? 'active' : '' }}">Stripe</button>
             <button wire:click="changePayoutType('paypal')"
                 class="nav-link btn btn-sm btn-color-muted btn-active btn-active-light fw-bold px-4 me-1 {{ $payout_type === 'paypal' ? 'active' : '' }}">Paypal</button>
-        </div> --}}
+        </div>
 
         <div class="card-toolbar">
             <button wire:click="changeType('all')"
@@ -43,8 +43,11 @@
                         <th class="pb-3 min-w-100px text-center">Amount</th>
                         <th class="pb-3 min-w-100px text-center">Payout ID</th>
                         <th class="pb-3 min-w-100px text-center">Status</th>
-                        <th class="pb-3 min-w-100px text-center">Type</th>
-                        <th class="pb-3 min-w-100px text-center">Arrival Date</th>
+                        @if ($payout_type === 'stripe')
+                            <th class="pb-3 min-w-100px text-center">Type</th>
+                            <th class="pb-3 min-w-100px text-center">Arrival Date</th>
+                        @endif
+
                         <th class="pb-3 min-w-100px text-center">Created</th>
                     </tr>
                 </thead>
@@ -58,13 +61,16 @@
                                 {{ currency_sign($payout->currency) }}{{ formatted_number($payout->amount) }}</td>
                             <td class="text-center">{{ $payout->payout_id }}</td>
                             <td class="text-capitalize text-center">{{ $payout->status }}</td>
-                            <td class="text-capitalize text-center">{{ str_replace('_', ' ', $payout->type) }}</td>
-                            <td class="text-capitalize text-center">{{ $payout->arrival_date->format('d M y') }}</td>
+                            @if ($payout_type === 'stripe')
+                                <td class="text-capitalize text-center">{{ str_replace('_', ' ', $payout->type) }}</td>
+                                <td class="text-capitalize text-center">{{ $payout->arrival_date->format('d M y') }}
+                                </td>
+                            @endif
                             <td class="text-center">{{ $payout->created_at->format('d M y') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8">No payout</td>
+                            <td colspan="{{ $payout_type === 'stripe' ? '8' : '6' }}">No payout</td>
                         </tr>
                     @endforelse
                 </tbody>

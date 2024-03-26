@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\DonationType;
 use App\Models\Compaign;
 use App\Models\Donation;
+use App\Models\PaypalPayout;
 use App\Models\StripePayout;
 use App\Services\StripeService;
 use App\Traits\DaysBetweenDates;
@@ -66,10 +67,27 @@ class DashboardController extends Controller
             $total_raised_with_tax_after_reset = $compaign->reset?->last_total_with_tax ?? 0;
             $item['total_raised_with_tax'] = $total_raised_with_tax - $total_raised_with_tax_after_reset;
 
-            $item['total_withdraw'] = StripePayout::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            $item['stripe_withdraw'] = StripePayout::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            $item['paypal_withdraw'] = PaypalPayout::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            // $item['total_withdraw'] = StripePayout::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            $item['total_withdraw'] = $item['stripe_withdraw'] + $item['paypal_withdraw'];
             $item['remaining_balance'] = (float) $item['total_raised'] - (float) $item['total_withdraw'];
 
-            $item['withdraw_limit'] = (float) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::STRIPE->value)->sum('culacted') - (float) StripePayout::where('compaign_id', $compaign->id)->sum('amount');
+            // calculating stripe remaining withdraw limit
+            $stripe_calculated = (float) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::STRIPE->value)->sum('culacted');
+            $calculated_after_reset = $stripe_calculated - $total_raised_with_tax_after_reset;
+            $item['stripe_withdraw'] = (float) StripePayout::where('compaign_id', $compaign->id)->sum('amount');
+            $item['stripe_withdraw_limit'] = $calculated_after_reset - $item['stripe_withdraw'];
+
+            // calculating paypal remaining withdraw limit
+            $paypal_calculated = (float) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::PAYPAL->value)->sum('culacted');
+            $paypal_calculated_after_reset = $paypal_calculated - $total_raised_with_tax_after_reset;
+            $item['paypal_withdraw'] = (float) PaypalPayout::where('compaign_id', $compaign->id)->sum('amount');
+            $item['paypal_withdraw_limit'] = $paypal_calculated_after_reset - $item['paypal_withdraw'];
+
+            // can user withdraw by disable/enable withdraw button
+            // $item['can_withdraw'] = $calculated_after_reset > $item['stripe_withdraw_limit'] || $calculated_after_reset > $item['paypal_withdraw_limit'];
+            $item['can_withdraw'] = $item['stripe_withdraw_limit'] > 0 || $item['paypal_withdraw_limit'] > 0;
 
             $starting = Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->oldest()->first()?->created_at;
 
@@ -87,16 +105,23 @@ class DashboardController extends Controller
             $formatted_compaigns['paypal_donations'][] = Donation::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::PAYPAL->value)->sum('culacted');
         }
 
+        // dd($compaigns);
+
         // getting data for stripe and paypal, getting formatted data for each compaign based on duration type
         $stripe_donations = Donation::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('type', DonationType::STRIPE->value)->sum('culacted');
         $paypal_donations = Donation::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('type', DonationType::PAYPAL->value)->sum('culacted');
+
+        $total_stripe_withdraw = StripePayout::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->sum('amount');
+        $total_paypal_withdraw = PaypalPayout::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->sum('amount');
 
         return view('dashboard', [
             'compaigns' => $compaigns,
             'formatted_compaigns' => $formatted_compaigns,
             'goal_amt' => Compaign::whereIn('id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->latest()->sum('goal_amt'),
             'total_raised' => Donation::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->sum('culacted'),
-            'total_withdraw' => StripePayout::whereIn('compaign_id', active_compaigns())->when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->sum('amount'),
+            'total_withdraw' => (float) $total_stripe_withdraw + (float) $total_paypal_withdraw,
+            'stripe_withdraw' => (float) $total_stripe_withdraw,
+            'paypal_withdraw' => (float) $total_paypal_withdraw,
             'performance' => $performance,
             'stripe_donations' => $stripe_donations,
             'paypal_donations' => $paypal_donations,

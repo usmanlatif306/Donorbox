@@ -20,6 +20,10 @@
         .top-grean-bg {
             background-image: url("{{ asset('assets/media/top-green.png') }}")
         }
+
+        .fs-2 {
+            font-size: 2rem !important;
+        }
     </style>
 </head>
 
