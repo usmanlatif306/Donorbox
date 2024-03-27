@@ -64,7 +64,7 @@
                             <!--end::Close-->
                         </div>
 
-                        <form action="{{ route('withdraw') }}" method="post">
+                        <form id="withdraw_form" action="{{ route('withdraw') }}" method="post">
                             @csrf
                             <div class="modal-body">
                                 <!--begin::Tabs-->
@@ -93,7 +93,7 @@
 
                                 <div class="">
                                     <input type="number" id="withdraw_amount" name="withdraw_amount" class="form-control"
-                                        placeholder="Enter withdraw amount" required />
+                                        placeholder="Enter withdraw amount" min="1" required />
                                     <span id="stripe_remaining_amount_notice" class="text-primary d-block pt-1"></span>
                                     <span id="paypal_remaining_amount_notice"
                                         class="text-primary d-block pt-1 d-none"></span>
@@ -177,5 +177,10 @@
             $('#reset_compaign_id').val(compaign_id);
             $('#reset_compaign_form').submit();
         }
+
+        $('#withdraw_form').on('submit', function(event) {
+            $('#withdrawl_modal').modal('hide');
+            $(':button').prop('disabled', true);
+        })
     </script>
 @endpush
