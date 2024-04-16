@@ -15,6 +15,10 @@ class WithdrawController extends Controller
      */
     public function __invoke(Request $request, StripeService $service)
     {
+        $request->validate([
+            'withdraw_amount' => ['required', 'numeric']
+        ]);
+
         if (!$request->has('withdraw_amount') || (float) $request->withdraw_amount <= 0) {
             return back()->with('error', 'Withdraw amount should be greater than 0!');
         }

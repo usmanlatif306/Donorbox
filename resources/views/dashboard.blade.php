@@ -92,7 +92,7 @@
                                 </div>
 
                                 <div class="">
-                                    <input type="number" id="withdraw_amount" name="withdraw_amount" class="form-control"
+                                    <input type="text" id="withdraw_amount" name="withdraw_amount" class="form-control"
                                         placeholder="Enter withdraw amount" min="1" required />
                                     <span id="stripe_remaining_amount_notice" class="text-primary d-block pt-1"></span>
                                     <span id="paypal_remaining_amount_notice"

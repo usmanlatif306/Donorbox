@@ -31,7 +31,7 @@
                     <span class="path2"></span>
                 </i>
                 <input type="search" wire:model.live="search" class="form-control form-control-solid w-250px ps-13"
-                    placeholder="{{ __('Search doantion') }}" />
+                    placeholder="{{ __('Search donations') }}" />
             </div>
             <div class="">
                 <a href="{{ route('donations.export', ['type' => 'pdf']) }}"
