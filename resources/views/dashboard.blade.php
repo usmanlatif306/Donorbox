@@ -83,6 +83,8 @@
 
                                 <input type="hidden" name="type" value="stripe">
                                 <input type="hidden" id="compaign_id" name="compaign_id">
+                                <input type="hidden" id="stripe_withdraw_limit" name="stripe_withdraw_limit">
+                                <input type="hidden" id="paypal_withdraw_limit" name="paypal_withdraw_limit">
 
                                 <div id="payout_id" class="d-none mb-4">
                                     <input type="text" name="payout_id" class="form-control"
@@ -164,6 +166,8 @@
 
             // setting values for withdraw modal
             $('#compaign_id').val(compaign_id);
+            $("#stripe_withdraw_limit").val(stripe_limit);
+            $("#paypal_withdraw_limit").val(paypal_limit);
             $('#modal_title').text(compaign_name);
             $('#stripe_remaining_amount_notice').text(`Remaining stripe balance to withdraw: ${stripe_remaining_amount}`);
             $('#paypal_remaining_amount_notice').text(`Remaining paypal balance to withdraw: ${paypal_remaining_amount}`);

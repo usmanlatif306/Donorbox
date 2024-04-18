@@ -29,6 +29,10 @@ class WithdrawController extends Controller
 
         // if withdraw type is stripe
         if ($request->type === 'stripe') {
+            if (!$request->has('stripe_withdraw_limit') || (float) $request->withdraw_amount > (float) $request->stripe_withdraw_limit) {
+                return back()->with('error', 'Stripe withdraw limit exceeded. Please enter amount less than or equal to ' . currency_sign() . $request->stripe_withdraw_limit . '.');
+            }
+
             $stripe_balance = $service->balance();
 
             if ((float) $request->withdraw_amount > $stripe_balance['amount']) {
@@ -58,6 +62,10 @@ class WithdrawController extends Controller
                 return back()->with('error', $response['message']);
             }
         } else {
+            if (!$request->has('paypal_withdraw_limit') || (float) $request->withdraw_amount > (float) $request->paypal_withdraw_limit) {
+                return back()->with('error', 'Paypal withdraw limit exceeded. Please enter amount less than or equal to ' . currency_sign() . $request->paypal_withdraw_limit . '.');
+            }
+
             PaypalPayout::create([
                 'payout_id' => $request->payout_id,
                 'compaign_id' => $request->compaign_id,

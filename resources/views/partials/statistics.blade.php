@@ -2,6 +2,10 @@
     <!--begin::Row-->
     <div class="row g-lg-5 g-xl-10">
         @foreach ($compaigns as $item)
+            @php
+                $total_withdraw = $item['stripe_withdraw'] + $item['paypal_withdraw'];
+                $remaning_to_withdraw = $item['total_raised_with_tax'] - $total_withdraw;
+            @endphp
             <!--begin::Col-->
             {{-- <div class="{{ !$loop->last ? 'col-md-6 col-xl-6' : 'col-12' }}"> --}}
             <div class="col-12 col-lg-6">
@@ -10,19 +14,26 @@
                         <div class="mb-4 px-9">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <div class="d-flex align-items-center justify-content-between gap-5 flex-1 w-100 pe-4">
-                                    <div class="d-flex align-items-center" title="Raised Donations Without Tax">
-                                        <span
-                                            class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">{{ formatted_number($item['total_raised']) }}</span>
-                                        <span
-                                            class="d-flex align-items-end text-gray-400 fs-6 fw-semibold">{{ $currency_sign }}</span>
-                                    </div>
-                                    <div class="d-flex align-items-center" title="Raised Donations With Tax">
+                                    <div class="d-flex align-items-center" title="Raised Donations After Tax">
                                         <span
                                             class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">{{ formatted_number($item['total_raised_with_tax']) }}</span>
                                         <span
                                             class="d-flex align-items-end text-gray-400 fs-6 fw-semibold">{{ $currency_sign }}</span>
                                     </div>
-                                    <div class="d-flex flex-column gap-3">
+                                    <div class="d-flex align-items-center" title="Donation Remaning To Withdraw">
+                                        <span
+                                            class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">{{ formatted_number($remaning_to_withdraw) }}</span>
+                                        <span
+                                            class="d-flex align-items-end text-gray-400 fs-6 fw-semibold">{{ $currency_sign }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center"
+                                        title="Total Withdraw. Stripe:{{ $currency_sign . $item['stripe_withdraw'] }} , Paypal: {{ $currency_sign . $item['paypal_withdraw'] }}">
+                                        <span
+                                            class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">{{ formatted_number($total_withdraw) }}</span>
+                                        <span
+                                            class="d-flex align-items-end text-gray-400 fs-6 fw-semibold">{{ $currency_sign }}</span>
+                                    </div>
+                                    {{-- <div class="d-flex flex-column gap-3">
                                         <div class="d-flex align-items-center" title="Stripe Withdraw">
                                             <span
                                                 class="fs-2 fw-bold text-gray-800 me-2 lh-1 ls-n2">{{ formatted_number($item['stripe_withdraw']) }}</span>
@@ -36,7 +47,7 @@
                                                 class="d-flex align-items-end text-gray-400 fs-6 fw-semibold">{{ $currency_sign }}</span>
                                         </div>
 
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div class="d-flex flex-column gap-3">
                                     <button class="btn btn-sm btn-light-primary"
