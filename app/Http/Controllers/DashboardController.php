@@ -59,38 +59,68 @@ class DashboardController extends Controller
             $item['compaign'] = $compaign;
             $item['id'] = $compaign->id;
 
-            $total_raised = Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
-            $total_stripe_raised_after_reset = $compaign->reset?->last_stripe_total ?? 0;
-            $total_paypal_raised_after_reset = $compaign->reset?->last_paypal_total ?? 0;
-            $item['total_raised'] = $total_raised - ($total_stripe_raised_after_reset + $total_paypal_raised_after_reset);
+            // calculations at last reset
+            $total_stripe_raised_at_reset = $compaign->reset?->last_stripe_total ?? 0;
+            $total_paypal_raised_at_reset = $compaign->reset?->last_paypal_total ?? 0;
+            $item['total_stripe_raised_at_reset'] = $total_stripe_raised_at_reset;
+            $item['total_paypal_raised_at_reset'] = $total_paypal_raised_at_reset;
+            $item['total_raised_at_reset'] = $total_stripe_raised_at_reset + $total_paypal_raised_at_reset;
+            $total_stripe_raised_with_tax_at_reset = $compaign->reset?->last_stripe_total_with_tax ?? 0;
+            $total_paypal_raised_with_tax_at_reset = $compaign->reset?->last_paypal_total_with_tax ?? 0;
+            $item['total_stripe_raised_with_tax_at_reset'] = $total_stripe_raised_with_tax_at_reset;
+            $item['total_paypal_raised_with_tax_at_reset'] = $total_paypal_raised_with_tax_at_reset;
+            $item['total_raised_with_tax_at_reset'] = $total_stripe_raised_with_tax_at_reset + $total_paypal_raised_with_tax_at_reset;
+            $total_stripe_withdraw_amount_at_reset = $compaign->reset?->total_stripe_withdraw_amount ?? 0;
+            $total_paypal_withdraw_amount_at_reset = $compaign->reset?->total_paypal_withdraw_amount ?? 0;
+            $item['total_stripe_withdraw_amount_at_reset'] = $total_stripe_withdraw_amount_at_reset;
+            $item['total_paypal_withdraw_amount_at_reset'] = $total_paypal_withdraw_amount_at_reset;
+            $item['total_withdraw_at_reset'] = $total_stripe_withdraw_amount_at_reset + $total_paypal_withdraw_amount_at_reset;
 
-            $total_raised_with_tax = Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('culacted');
-            $total_stripe_raised_with_tax_after_reset = $compaign->reset?->last_stripe_total_with_tax ?? 0;
-            $total_paypal_raised_with_tax_after_reset = $compaign->reset?->last_paypal_total_with_tax ?? 0;
-            $item['total_raised_with_tax'] = $total_raised_with_tax - ($total_stripe_raised_with_tax_after_reset + $total_paypal_raised_with_tax_after_reset);
+            // total amount raised without tax all time
+            $total_raised = $item['total_raised_without_tax_all_time'] = Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            // total amount raised without tax after reset
+            $item['total_raised_after_reset'] = $total_raised - $item['total_raised_at_reset'];
 
-            $item['stripe_withdraw'] = StripePayout::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
-            $item['paypal_withdraw'] = PaypalPayout::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
-            // $item['total_withdraw'] = StripePayout::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            // total amount raised with tax all time
+            $item['total_raised_with_tax_all_time'] = (double) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('culacted');
+
+            // total amount raised with tax after reset
+            $total_raised_with_tax_after_reset = $item['total_raised_with_tax_all_time'] - $item['total_raised_with_tax_at_reset'];
+            $item['total_raised_with_tax_after_reset'] = str_contains($total_raised_with_tax_after_reset, '-') ? 0 : $total_raised_with_tax_after_reset;
+
+            // total stripe withdraw all time
+            $stripe_withdraw_all_time = StripePayout::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            // current stripe withdraw will be calculated by total stripe withdraw - total stripe withdraw amount at reset
+            $item['stripe_withdraw'] = $stripe_withdraw_all_time - $item['total_stripe_withdraw_amount_at_reset'];
+
+            // total paypal withdraw all time
+            $paypal_withdraw_all_time = PaypalPayout::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->sum('amount');
+            // current paypal withdraw will be calculated by total paypal withdraw - total paypal withdraw amount at reset
+            $item['paypal_withdraw'] = $paypal_withdraw_all_time - $item['total_paypal_withdraw_amount_at_reset'];
+
+            // current total withdraw after reset
             $item['total_withdraw'] = $item['stripe_withdraw'] + $item['paypal_withdraw'];
-            $item['remaining_balance'] = (float) $item['total_raised'] - (float) $item['total_withdraw'];
+            $item['remaining_balance'] = (float) $item['total_raised_with_tax_after_reset'] - (float) $item['total_withdraw'];
 
             // calculating stripe remaining withdraw limit
-            $stripe_calculated = (float) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::STRIPE->value)->sum('culacted');
-            $calculated_after_reset = $stripe_calculated - $total_stripe_raised_with_tax_after_reset;
-            $item['stripe_withdraw'] = (float) StripePayout::where('compaign_id', $compaign->id)->sum('amount');
-            $item['stripe_withdraw_limit'] = $calculated_after_reset - $item['stripe_withdraw'];
+            $stripe_raised = (float) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::STRIPE->value)->sum('culacted');
+            $stripe_raised_after_reset = $stripe_raised - $total_stripe_raised_with_tax_at_reset;
+            $item['stripe_raised_after_reset'] = str_contains($stripe_raised_after_reset, '-') ? 0 : $stripe_raised_after_reset;
+            $stripe_withdraw = (float) StripePayout::where('compaign_id', $compaign->id)->sum('amount');
+            $item['total_stripe_withdraw_after_reset'] = $stripe_withdraw - $item['total_stripe_withdraw_amount_at_reset'];
+            $item['stripe_withdraw_limit'] = $item['stripe_raised_after_reset'] - $item['total_stripe_withdraw_after_reset'];
             $item['stripe_withdraw_limit'] = $item['stripe_withdraw_limit'] > 0 ? $item['stripe_withdraw_limit'] : 0;
 
             // calculating paypal remaining withdraw limit
-            $paypal_calculated = (float) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::PAYPAL->value)->sum('culacted');
-            $paypal_calculated_after_reset = $paypal_calculated - $total_paypal_raised_with_tax_after_reset;
-            $item['paypal_withdraw'] = (float) PaypalPayout::where('compaign_id', $compaign->id)->sum('amount');
-            $item['paypal_withdraw_limit'] = $paypal_calculated_after_reset - $item['paypal_withdraw'];
+            $paypal_raised = (float) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::PAYPAL->value)->sum('culacted');
+            $paypal_raised_after_reset = $paypal_raised - $total_paypal_raised_with_tax_at_reset;
+            $item['paypal_raised_after_reset'] = str_contains($paypal_raised_after_reset, '-') ? 0 : $paypal_raised_after_reset;
+            $paypal_withdraw = (float) PaypalPayout::where('compaign_id', $compaign->id)->sum('amount');
+            $item['total_paypal_withdraw_after_reset'] = $paypal_withdraw - $item['total_paypal_withdraw_amount_at_reset'];
+            $item['paypal_withdraw_limit'] = $item['paypal_raised_after_reset'] - $item['total_paypal_withdraw_after_reset'];
             $item['paypal_withdraw_limit'] = $item['paypal_withdraw_limit'] > 0 ? $item['paypal_withdraw_limit'] : 0;
 
             // can user withdraw by disable/enable withdraw button
-            // $item['can_withdraw'] = $calculated_after_reset > $item['stripe_withdraw_limit'] || $calculated_after_reset > $item['paypal_withdraw_limit'];
             $item['can_withdraw'] = $item['stripe_withdraw_limit'] > 0 || $item['paypal_withdraw_limit'] > 0;
 
             $starting = Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->oldest()->first()?->created_at;

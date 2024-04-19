@@ -4,7 +4,7 @@
         @foreach ($compaigns as $item)
             @php
                 $total_withdraw = $item['stripe_withdraw'] + $item['paypal_withdraw'];
-                $remaning_to_withdraw = $item['total_raised_with_tax'] - $total_withdraw;
+                $remaning_to_withdraw = $item['total_raised_with_tax_after_reset'] - $total_withdraw;
             @endphp
             <!--begin::Col-->
             {{-- <div class="{{ !$loop->last ? 'col-md-6 col-xl-6' : 'col-12' }}"> --}}
@@ -16,7 +16,7 @@
                                 <div class="d-flex align-items-center justify-content-between gap-5 flex-1 w-100 pe-4">
                                     <div class="d-flex align-items-center" title="Raised Donations After Tax">
                                         <span
-                                            class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">{{ formatted_number($item['total_raised_with_tax']) }}</span>
+                                            class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">{{ formatted_number($item['total_raised_with_tax_after_reset']) }}</span>
                                         <span
                                             class="d-flex align-items-end text-gray-400 fs-6 fw-semibold">{{ $currency_sign }}</span>
                                     </div>
@@ -52,7 +52,7 @@
                                 <div class="d-flex flex-column gap-3">
                                     <button class="btn btn-sm btn-light-primary"
                                         onclick="resetCompaign('{{ $item['compaign']->id }}')" title="Reset Campaign"
-                                        {{ $item['total_raised'] == 0 ? 'disabled' : '' }}>Reset</button>
+                                        {{ $item['total_raised_with_tax_after_reset'] == 0 ? 'disabled' : '' }}>Reset</button>
                                     <button class="btn btn-sm btn-light-primary"
                                         onclick="withdraw('{{ $item['compaign']->id }}','{{ $item['compaign']->name }}',{{ $item['stripe_withdraw_limit'] }},'{{ $currency_sign . $item['stripe_withdraw_limit'] }}',{{ $item['paypal_withdraw_limit'] }},'{{ $currency_sign . $item['paypal_withdraw_limit'] }}')"
                                         {{ !$item['can_withdraw'] ? 'disabled' : '' }}

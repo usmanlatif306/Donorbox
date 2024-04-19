@@ -14,7 +14,7 @@ class CompaignReset extends Model
      *
      * @var array
      */
-    protected $fillable = ['compaign_id', 'last_stripe_total', 'last_stripe_total_with_tax', 'last_paypal_total', 'last_paypal_total_with_tax'];
+    protected $fillable = ['compaign_id', 'last_stripe_total', 'last_stripe_total_with_tax', 'last_paypal_total', 'last_paypal_total_with_tax', 'total_stripe_withdraw_amount', 'total_paypal_withdraw_amount'];
 
     /**
      * The attributes that should be cast to native types.
@@ -26,5 +26,7 @@ class CompaignReset extends Model
         'last_stripe_total_with_tax' => 'float',
         'last_paypal_total' => 'float',
         'last_paypal_total_with_tax' => 'float',
+        'total_stripe_withdraw_amount' => 'float',
+        'total_paypal_withdraw_amount' => 'float',
     ];
 }

@@ -178,8 +178,10 @@
         }
 
         function resetCompaign(compaign_id) {
-            $('#reset_compaign_id').val(compaign_id);
-            $('#reset_compaign_form').submit();
+            if (confirm('Are you sure to reset compaign?')) {
+                $('#reset_compaign_id').val(compaign_id);
+                $('#reset_compaign_form').submit();
+            }
         }
 
         $('#withdraw_form').on('submit', function(event) {
