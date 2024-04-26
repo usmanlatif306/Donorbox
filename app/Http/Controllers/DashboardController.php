@@ -71,7 +71,9 @@ class DashboardController extends Controller
             $item['total_paypal_raised_with_tax_at_reset'] = $total_paypal_raised_with_tax_at_reset;
             $item['total_raised_with_tax_at_reset'] = $total_stripe_raised_with_tax_at_reset + $total_paypal_raised_with_tax_at_reset;
             $total_stripe_withdraw_amount_at_reset = $compaign->reset?->total_stripe_withdraw_amount ?? 0;
+            // $total_stripe_withdraw_amount_at_reset = $compaign->reset?->last_stripe_total_with_tax ?? 0;
             $total_paypal_withdraw_amount_at_reset = $compaign->reset?->total_paypal_withdraw_amount ?? 0;
+            // $total_paypal_withdraw_amount_at_reset = $compaign->reset?->last_paypal_total_with_tax ?? 0;
             $item['total_stripe_withdraw_amount_at_reset'] = $total_stripe_withdraw_amount_at_reset;
             $item['total_paypal_withdraw_amount_at_reset'] = $total_paypal_withdraw_amount_at_reset;
             $item['total_withdraw_at_reset'] = $total_stripe_withdraw_amount_at_reset + $total_paypal_withdraw_amount_at_reset;
@@ -100,7 +102,8 @@ class DashboardController extends Controller
 
             // current total withdraw after reset
             $item['total_withdraw'] = $item['stripe_withdraw'] + $item['paypal_withdraw'];
-            $item['remaining_balance'] = (float) $item['total_raised_with_tax_after_reset'] - (float) $item['total_withdraw'];
+            $remaining_balance = $item['total_raised_with_tax_after_reset'] - $item['total_withdraw'];
+            $item['remaining_balance'] = str_contains($remaining_balance, '-') ? 0 : $remaining_balance;
 
             // calculating stripe remaining withdraw limit
             $stripe_raised = (float) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::STRIPE->value)->sum('culacted');
@@ -108,8 +111,8 @@ class DashboardController extends Controller
             $item['stripe_raised_after_reset'] = str_contains($stripe_raised_after_reset, '-') ? 0 : $stripe_raised_after_reset;
             $stripe_withdraw = (float) StripePayout::where('compaign_id', $compaign->id)->sum('amount');
             $item['total_stripe_withdraw_after_reset'] = $stripe_withdraw - $item['total_stripe_withdraw_amount_at_reset'];
-            $item['stripe_withdraw_limit'] = $item['stripe_raised_after_reset'] - $item['total_stripe_withdraw_after_reset'];
-            $item['stripe_withdraw_limit'] = $item['stripe_withdraw_limit'] > 0 ? $item['stripe_withdraw_limit'] : 0;
+            $stripe_withdraw_limit = $item['stripe_raised_after_reset'] - $item['total_stripe_withdraw_after_reset'];
+            $item['stripe_withdraw_limit'] = str_contains($stripe_withdraw_limit, '-') ? 0 : $stripe_withdraw_limit;
 
             // calculating paypal remaining withdraw limit
             $paypal_raised = (float) Donation::when($request->has('type') && $request->type !== 'all', fn($q) => $q->duration($request->type))->where('compaign_id', $compaign->id)->where('type', DonationType::PAYPAL->value)->sum('culacted');
@@ -117,8 +120,8 @@ class DashboardController extends Controller
             $item['paypal_raised_after_reset'] = str_contains($paypal_raised_after_reset, '-') ? 0 : $paypal_raised_after_reset;
             $paypal_withdraw = (float) PaypalPayout::where('compaign_id', $compaign->id)->sum('amount');
             $item['total_paypal_withdraw_after_reset'] = $paypal_withdraw - $item['total_paypal_withdraw_amount_at_reset'];
-            $item['paypal_withdraw_limit'] = $item['paypal_raised_after_reset'] - $item['total_paypal_withdraw_after_reset'];
-            $item['paypal_withdraw_limit'] = $item['paypal_withdraw_limit'] > 0 ? $item['paypal_withdraw_limit'] : 0;
+            $paypal_withdraw_limit = $item['paypal_raised_after_reset'] - $item['total_paypal_withdraw_after_reset'];
+            $item['paypal_withdraw_limit'] = str_contains($paypal_withdraw_limit, '-') ? 0 : $paypal_withdraw_limit;
 
             // can user withdraw by disable/enable withdraw button
             $item['can_withdraw'] = $item['stripe_withdraw_limit'] > 0 || $item['paypal_withdraw_limit'] > 0;
